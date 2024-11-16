@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # Fullstack app (frontend + backend) in one service
+  fullstack:
+    build: .
+    container_name: fullstack-app
+    ports:
+      - "3000:3000" # Backend (Node.js)
+      - "80:80"     # Frontend (React)
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/mydb
+    depends_on:
+      - mongo
+    networks:
+      - fullstack-network
+
+  # MongoDB service
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=mydb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - fullstack-network
+
+networks:
+  fullstack-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
